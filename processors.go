@@ -13,38 +13,37 @@ func StateProcessor(state *rwp.HWCState) {
 		return
 	}
 
-	// If the state contains image file for conversion, we will do that:
-	if state.Processors.GfxConv != nil {
+	switch {
+	case state.Processors.GfxConv != nil:
 		stateGfxConverter(state)
-	}
 
-	// If the state contains data for audio meters, we will make that happen:
-	if state.Processors.AudioMeter != nil {
+	case state.Processors.AudioMeter != nil:
 		stateAudioMeter(state)
-	}
 
-	// If the state contains data for strength meters, we will make that happen:
-	if state.Processors.StrengthMeter != nil {
+	case state.Processors.StrengthMeter != nil:
 		stateStrengthMeter(state)
-	}
 
-	// If the state contains instructions for converting HWCText to HWCGfx, we will do that:
-	if state.Processors.TextToGraphics != nil {
+	case state.Processors.TextToGraphics != nil:
 		stateTextToGraphics(state)
-	}
 
-	// Test: Will render UTF8 text
-	if state.Processors.UniText != nil {
+	case state.Processors.UniText != nil:
 		stateUniText(state)
-	}
 
-	// Test: Will render an image with border and text in the middle that announces the resolution.
-	if state.Processors.Test != nil {
+	case state.Processors.Icon != nil:
+		stateIcon(state)
+
+	case state.Processors.Test != nil:
 		stateTest(state)
 	}
+
+	state.Processors = nil
 }
 
 func writeImageToHWCGFx(state *rwp.HWCState, inImg image.Image) {
+	writeImageToHWCGFxWithType(state, inImg, 0)
+}
+
+func writeImageToHWCGFxWithType(state *rwp.HWCState, inImg image.Image, imageType uint32) {
 	// Initialize a raw panel graphics state:
 	img := rwp.HWCGfx{}
 	img.W = uint32(inImg.Bounds().Dx())
@@ -53,8 +52,19 @@ func writeImageToHWCGFx(state *rwp.HWCState, inImg image.Image) {
 	// Use monoImg to create a base:
 	monoImg := monogfx.MonoImg{}
 	monoImg.NewImage(int(img.W), int(img.H))
-	img.ImageType = rwp.HWCGfx_MONO
-	img.ImageData = monoImg.GetImgSlice()
+
+	// Set up image type:
+	switch imageType {
+	case 1: // RGB
+		img.ImageType = rwp.HWCGfx_RGB16bit
+		img.ImageData = monoImg.GetImgSliceRGB()
+	case 2: // Gray
+		img.ImageType = rwp.HWCGfx_Gray4bit
+		img.ImageData = monoImg.GetImgSliceGray()
+	default: // 0
+		img.ImageType = rwp.HWCGfx_MONO
+		img.ImageData = monoImg.GetImgSlice()
+	}
 
 	// Set up bounds:
 	imgBounds := ImageBounds{X: 0, Y: 0, W: int(img.W), H: int(img.H)}
@@ -65,5 +75,4 @@ func writeImageToHWCGFx(state *rwp.HWCState, inImg image.Image) {
 	// Set the new image:
 	state.HWCGfx = &img
 	state.HWCText = nil
-	state.Processors.GfxConv = nil
 }
