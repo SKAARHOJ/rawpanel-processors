@@ -13,6 +13,8 @@ import (
 	rwp "github.com/SKAARHOJ/rawpanel-lib/ibeam_rawpanel"
 	"github.com/disintegration/gift"
 	log "github.com/s00500/env_logger"
+
+	_ "golang.org/x/image/webp" // Add this line to support webp decoding
 )
 
 // Converts PNG, JPEG and GIF files into raw panel data
@@ -76,7 +78,6 @@ func stateGfxConverter(state *rwp.HWCState) {
 	// Set the new image:
 	state.HWCGfx = &img
 	state.HWCText = nil
-	state.Processors.GfxConv = nil
 }
 
 func ScalingAndFilters(srcImg image.Image, fitting string, imgWidth int, imgHeight int, imageFilters string) image.Image {
