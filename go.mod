@@ -1,8 +1,6 @@
 module github.com/SKAARHOJ/rawpanel-processors
 
-go 1.23.0
-
-toolchain go1.24.3
+go 1.25.0
 
 require (
 	github.com/SKAARHOJ/ibeam-lib-utils v1.0.0
@@ -12,7 +10,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/s00500/env_logger v0.1.29
 	github.com/sasha-s/go-deadlock v0.3.6
-	golang.org/x/image v0.30.0
+	golang.org/x/image v0.38.0
 )
 
 require (
