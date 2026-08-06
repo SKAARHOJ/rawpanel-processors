@@ -10,7 +10,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/s00500/env_logger v0.1.29
 	github.com/sasha-s/go-deadlock v0.3.6
-	golang.org/x/image v0.38.0
+	golang.org/x/image v0.41.0
 )
 
 require (
